@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Paths;
+package org.firstinspires.ftc.teamcode.Autonomous.ArchivedPaths;
 
 import androidx.annotation.NonNull;
 
@@ -11,9 +11,11 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Autonomous.Actions;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonSystems;
 import org.firstinspires.ftc.teamcode.Autonomous.Field;
 import org.firstinspires.ftc.teamcode.Autonomous.TrajectoryUtil.TrajectorySequence;
@@ -26,6 +28,7 @@ import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.VirtualBar;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Wrist;
 
 @Config
+@Disabled
 @Autonomous(name="5 Spec Auton", group = "Autonomous")
 public class Auton5Spec extends LinearOpMode implements Field {
 

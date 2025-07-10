@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Paths;
+package org.firstinspires.ftc.teamcode.Autonomous.ArchivedPaths;
 
 import androidx.annotation.NonNull;
 
@@ -9,18 +9,17 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.sun.tools.javac.util.List;
 
 import org.firstinspires.ftc.teamcode.Autonomous.AutonSystems;
 import org.firstinspires.ftc.teamcode.Autonomous.Field;
-import org.firstinspires.ftc.teamcode.Autonomous.Paths.Actions;
-import org.firstinspires.ftc.teamcode.Autonomous.Paths.Timings;
+import org.firstinspires.ftc.teamcode.Autonomous.Actions;
+import org.firstinspires.ftc.teamcode.Autonomous.Timings;
 import org.firstinspires.ftc.teamcode.Autonomous.TrajectoryUtil.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Roadrunner.AutonMechDrive;
-import org.firstinspires.ftc.teamcode.RobotSystem.DeviceConfig;
 import org.firstinspires.ftc.teamcode.RobotSystem.Lynx;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Blocker;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Color_Sensor;
@@ -31,6 +30,7 @@ import org.firstinspires.ftc.teamcode.Teleop.util.Toggle;
 import java.util.LinkedList;
 import java.util.Queue;
 
+@Disabled
 @Autonomous(name = "Amazing Auton")
 public class WorldsAuton_StateMachine extends OpMode implements Field {
 
@@ -89,11 +89,6 @@ public class WorldsAuton_StateMachine extends OpMode implements Field {
 
     @Override
     public void init() {
-
-
-
-
-
         autonTimer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         sampleCollectTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 

@@ -21,6 +21,7 @@ public class LocalizationTest extends LinearOpMode {
         AutonMechDrive drive = new AutonMechDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.setPoseEstimate(new Pose2d(-37.5, -63.5, Math.toRadians(0)));
 
         waitForStart();
 

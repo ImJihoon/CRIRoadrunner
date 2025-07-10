@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.RobotSystem.TomaOpMode;
 public class Claw extends TomaOpMode{
 
     public static double openPos = 0.40;
-    public static double closPos = 0.64;
+    public static double closPos = 0.67;
 
     public State currentState = State.CLOSED;
 

@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Paths;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Autonomous.AutonSystems;
 import org.firstinspires.ftc.teamcode.RobotSystem.DeviceConfig;
 import org.firstinspires.ftc.teamcode.RobotSystem.RobotState;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Blocker;
