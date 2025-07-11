@@ -88,9 +88,9 @@ public class CRISample extends OpMode {
                 .lineToLinearHeading(new Pose2d(-61,-58, Math.toRadians(66)))
                 .addTemporalMarker(actions.fullExtendo())
                 .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                .waitSeconds(.15)
+                .waitSeconds(.05)
                 .addTemporalMarker(actions.openClawforDeposit())
-                .waitSeconds(.45)
+                .waitSeconds(.25)
                 .addTemporalMarker(actions.slidesRest())
                 .build();
 
@@ -122,11 +122,11 @@ public class CRISample extends OpMode {
                     yellowSample1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
                             .addTemporalMarker(actions.intake())
-                            .lineToLinearHeading(new Pose2d(-55.6,-50.4, Math.toRadians(72)))
+                            .lineToLinearHeading(new Pose2d(-57,-48, Math.toRadians(72)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
-                            .turn(10)
-                            .turn(-20)
+                            .turn(Math.toRadians(10))
+                            .turn(Math.toRadians(-20))
                             .waitSeconds(.5)
                             .build();
                     drive.followTrajectorySequenceAsync(yellowSample1);
@@ -147,15 +147,15 @@ public class CRISample extends OpMode {
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                             .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
-                            .lineToLinearHeading(new Pose2d(-60, -55.5, Math.toRadians(85)))
+                            .lineToLinearHeading(new Pose2d(-61, -56, Math.toRadians(83)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
                             .addTemporalMarker(actions.prepForDeposit())
                             .waitSeconds(1)
                             .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.15)
+                            .waitSeconds(.05)
                             .addTemporalMarker(actions.openClawforDeposit())
                             .addTemporalMarker(actions.fullExtendo())
-                            .waitSeconds(.45)
+                            .waitSeconds(.25)
                             .addTemporalMarker(actions.slidesRest())
                             .build();
 
@@ -172,11 +172,11 @@ public class CRISample extends OpMode {
                     yellowSample2 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
                             .addTemporalMarker(actions.intake())
-                            .lineToLinearHeading(new Pose2d(-59.25,-51.25, Math.toRadians(86.6)))
+                            .lineToLinearHeading(new Pose2d(-59.25,-51, Math.toRadians(86.6)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
-                            .turn(10)
-                            .turn(-20)
+                            .turn(Math.toRadians(10))
+                            .turn(Math.toRadians(-20))
                             .waitSeconds(.5)
                             .build();
                     drive.followTrajectorySequenceAsync(yellowSample2);
@@ -190,21 +190,20 @@ public class CRISample extends OpMode {
 
                     drive.breakFollowing();
                     IS_COLOR_DETECT = false;
-
                     TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .addTemporalMarker(actions.transfer())
                             .waitSeconds(Timings.Deposit.WAIT_FOR_TRANSFER)
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                             .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                            .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
-                            .lineToLinearHeading(new Pose2d(-59.5, -54.5, Math.toRadians(82)))
+                            .UNSTABLE_addTemporalMarkerOffset(.2, actions.closeClaw())
+                            .lineToLinearHeading(new Pose2d(-60, -56, Math.toRadians(80)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
                             .addTemporalMarker(actions.prepForDeposit())
                             .waitSeconds(1)
                             .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.15)
+                            .waitSeconds(.05)
                             .addTemporalMarker(actions.openClawforDeposit())
-                            .waitSeconds(.45)
+                            .waitSeconds(.25)
                             .addTemporalMarker(actions.slidesRest())
                             .build();
 
@@ -239,7 +238,6 @@ public class CRISample extends OpMode {
 
                     drive.breakFollowing();
                     IS_COLOR_DETECT = false;
-
                     TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .addTemporalMarker(actions.transfer())
                             .waitSeconds(Timings.Deposit.WAIT_FOR_TRANSFER)
@@ -247,12 +245,14 @@ public class CRISample extends OpMode {
                             .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
                             .lineToLinearHeading(new Pose2d(-56, -57.6, Math.toRadians(55.7)))
+//                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
                             .addTemporalMarker(actions.prepForDeposit())
                             .waitSeconds(1)
                             .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.15)
+                            .waitSeconds(.05)
                             .addTemporalMarker(actions.openClawforDeposit())
-                            .waitSeconds(.45)
+                            .addTemporalMarker(actions.fullExtendo())
+                            .waitSeconds(.25)
                             .addTemporalMarker(actions.slidesRest())
                             .build();
 

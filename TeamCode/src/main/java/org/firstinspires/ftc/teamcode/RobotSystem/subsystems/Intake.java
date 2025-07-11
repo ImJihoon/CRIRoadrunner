@@ -13,10 +13,10 @@ public class Intake extends TomaOpMode {
 
     public State currentState = State.UP;
 
-    public static double SEMI_POS = .87;
+    public static double SEMI_POS = .84;
     public static double DOWN_POS = .92;
-    public static double UP_POS = 0.85;
-    public static double TRANSFER_POS = 0.71;
+    public static double UP_POS = 0.8;
+    public static double TRANSFER_POS = 0.74;
 
 
     public Intake(OpMode opMode) {
