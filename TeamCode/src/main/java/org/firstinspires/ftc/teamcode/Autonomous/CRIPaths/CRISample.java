@@ -37,9 +37,6 @@ public class CRISample extends OpMode {
     //Sample Intake Status
     boolean IS_COLOR_DETECT = false;
 
-    //Timers
-    ElapsedTime autonTimer, sampleCollectTimer;
-
     //Hardware Control Vars
     AutonMechDrive drive;
     AutonSystems autonSystems;
@@ -65,9 +62,6 @@ public class CRISample extends OpMode {
 
     @Override
     public void init() {
-        //Declare the timers
-        autonTimer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        sampleCollectTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         //Create Coord list
         coordQueue = new LinkedList<>();
@@ -85,13 +79,11 @@ public class CRISample extends OpMode {
         preloadTraj = drive.trajectorySequenceBuilder(new Pose2d(-37.5, -63.5, Math.toRadians(0)))
                 .addTemporalMarker(actions.prepForDeposit())
                 //Bucket + intake 1
-                .lineToLinearHeading(new Pose2d(-61,-58, Math.toRadians(66)))
+                .UNSTABLE_addTemporalMarkerOffset(0.7, actions.flipForDeposit(true))
+                .lineToLinearHeading(new Pose2d(-62,-59, Math.toRadians(66)))
                 .addTemporalMarker(actions.fullExtendo())
-                .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                .waitSeconds(.05)
-                .addTemporalMarker(actions.openClawforDeposit())
+                .UNSTABLE_addTemporalMarkerOffset(0, actions.openClawforDeposit())
                 .waitSeconds(.25)
-                .addTemporalMarker(actions.slidesRest())
                 .build();
 
     }
@@ -108,7 +100,6 @@ public class CRISample extends OpMode {
         telemetry.addLine("   ");
         telemetry.addData("current state", currentState);
         telemetry.addData("isBusy", drive.isBusy());
-        telemetry.addData("Auton Timer", autonTimer.seconds());
 
         switch (currentState) {
 
@@ -116,18 +107,19 @@ public class CRISample extends OpMode {
                 IS_COLOR_DETECT = false;
 
                 if (!drive.isBusy()) {
-                    sampleCollectTimer.reset();
+                    actions.slidesRest();
 //                        index++;
                     currentState = State.YELLOWSAMPLE1;
                     yellowSample1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
-                            .addTemporalMarker(actions.intake())
-                            .lineToLinearHeading(new Pose2d(-57,-48, Math.toRadians(72)))
+                            .UNSTABLE_addTemporalMarkerOffset(0,actions.intake())
+                            .lineToLinearHeading(new Pose2d(-57,-47, Math.toRadians(72)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
                             .turn(Math.toRadians(10))
                             .turn(Math.toRadians(-20))
                             .waitSeconds(.5)
+                            .back(20)
                             .build();
                     drive.followTrajectorySequenceAsync(yellowSample1);
 
@@ -142,21 +134,21 @@ public class CRISample extends OpMode {
                     IS_COLOR_DETECT = false;
 
                     TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .addTemporalMarker(actions.transfer())
                             .waitSeconds(Timings.Deposit.WAIT_FOR_TRANSFER)
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
-                            .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
-                            .lineToLinearHeading(new Pose2d(-61, -56, Math.toRadians(83)))
+                            .UNSTABLE_addTemporalMarkerOffset(.8, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(1.3, actions.flipForDeposit(true))
+                            .lineToLinearHeading(new Pose2d(-62, -58, Math.toRadians(81)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
-                            .addTemporalMarker(actions.prepForDeposit())
-                            .waitSeconds(1)
-                            .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.05)
+//                            .addTemporalMarker(actions.prepForDeposit())
+                            .waitSeconds(1.3)
+                            .UNSTABLE_addTemporalMarkerOffset(0, actions.fullExtendo())
                             .addTemporalMarker(actions.openClawforDeposit())
-                            .addTemporalMarker(actions.fullExtendo())
+                            .addTemporalMarker(()-> autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK))
                             .waitSeconds(.25)
-                            .addTemporalMarker(actions.slidesRest())
                             .build();
 
 
@@ -168,16 +160,19 @@ public class CRISample extends OpMode {
 
                 if (!drive.isBusy()) {
                     currentState = State.YELLOWSAMPLE2;
-                    sampleCollectTimer.reset();
+                    actions.slidesRest();
+                    actions.fullExtendo();
                     yellowSample2 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
+                            .addTemporalMarker(actions.fullExtendo())
                             .addTemporalMarker(actions.intake())
-                            .lineToLinearHeading(new Pose2d(-59.25,-51, Math.toRadians(86.6)))
+                            .lineToLinearHeading(new Pose2d(-59.25,-50, Math.toRadians(86.6)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
                             .turn(Math.toRadians(10))
                             .turn(Math.toRadians(-20))
                             .waitSeconds(.5)
+                            .back(20)
                             .build();
                     drive.followTrajectorySequenceAsync(yellowSample2);
                 }
@@ -185,26 +180,23 @@ public class CRISample extends OpMode {
                 break;
 
             case YELLOWSAMPLE2:
-
                 if (IS_COLOR_DETECT && autonSystems.robotSubSystems.colorSensor.getState() != Color_Sensor.State.NOTHING) {
 
                     drive.breakFollowing();
                     IS_COLOR_DETECT = false;
                     TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .addTemporalMarker(actions.transfer())
                             .waitSeconds(Timings.Deposit.WAIT_FOR_TRANSFER)
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
-                            .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                            .UNSTABLE_addTemporalMarkerOffset(.2, actions.closeClaw())
-                            .lineToLinearHeading(new Pose2d(-60, -56, Math.toRadians(80)))
-//                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
-                            .addTemporalMarker(actions.prepForDeposit())
-                            .waitSeconds(1)
-                            .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.05)
+                            .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
+                            .UNSTABLE_addTemporalMarkerOffset(.8, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(1.3, actions.flipForDeposit(true))
+                            .lineToLinearHeading(new Pose2d(-61, -58, Math.toRadians(75)))
+                            .waitSeconds(1.3)
                             .addTemporalMarker(actions.openClawforDeposit())
+                            .addTemporalMarker(()-> autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK))
                             .waitSeconds(.25)
-                            .addTemporalMarker(actions.slidesRest())
                             .build();
 
                     drive.followTrajectorySequenceAsync(toDeposit);
@@ -214,14 +206,14 @@ public class CRISample extends OpMode {
                 // if timer is up then skip basket
 
                 if (!drive.isBusy()) {
+                    actions.slidesRest();
+                    actions.semiExtendo();
                     currentState = State.YELLOWSAMPLE3;
-                    sampleCollectTimer.reset();
                     yellowSample3 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
                             .addTemporalMarker(actions.intake())
-                            .lineToLinearHeading(new Pose2d(-56,-38, Math.toRadians(137.5)))
+                            .lineToLinearHeading(new Pose2d(-55.75,-39, Math.toRadians(137.5)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
-                            .forward(5)
                             .turn(Math.toRadians(10))
                             .turn(Math.toRadians(-20))
                             .build();
@@ -235,21 +227,22 @@ public class CRISample extends OpMode {
             case YELLOWSAMPLE3:
 
                 if (IS_COLOR_DETECT && autonSystems.robotSubSystems.colorSensor.getState() != Color_Sensor.State.NOTHING) {
-
                     drive.breakFollowing();
+                    actions.slidesRest();
                     IS_COLOR_DETECT = false;
                     TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .addTemporalMarker(actions.transfer())
                             .waitSeconds(Timings.Deposit.WAIT_FOR_TRANSFER)
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                             .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                            .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
+                            .UNSTABLE_addTemporalMarkerOffset(.3, actions.closeClaw())
+                            .UNSTABLE_addTemporalMarkerOffset(.7, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(1.2, actions.flipForDeposit(true))
                             .lineToLinearHeading(new Pose2d(-56, -57.6, Math.toRadians(55.7)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
-                            .addTemporalMarker(actions.prepForDeposit())
-                            .waitSeconds(1)
-                            .UNSTABLE_addTemporalMarkerOffset(-.55, actions.flipForDeposit(true))
-                            .waitSeconds(.05)
+//                            .addTemporalMarker(actions.prepForDeposit())
+                            .waitSeconds(0.7)
                             .addTemporalMarker(actions.openClawforDeposit())
                             .addTemporalMarker(actions.fullExtendo())
                             .waitSeconds(.25)
@@ -263,7 +256,7 @@ public class CRISample extends OpMode {
                 // if timer is up then skip basket
 
                 if (!drive.isBusy()) {
-                    sampleCollectTimer.reset();
+                    actions.slidesRest();
 //                    currentState = WorldsAuton_StateMachine.State.SUB1;
 //                    drive.followTrajectorySequenceAsync(toSub);
                 }
