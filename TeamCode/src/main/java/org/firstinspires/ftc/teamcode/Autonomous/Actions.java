@@ -40,7 +40,7 @@ public class Actions {
         return () -> {
             autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK);
             autonSystems.robotSubSystems.extendo.setState(Extendo.State.EXTENDED);
-            autonSystems.robotSubSystems.intake.setState(Intake.State.UP);
+//            autonSystems.robotSubSystems.intake.setState(Intake.State.UP);
         };
     }
 
@@ -76,7 +76,7 @@ public class Actions {
     public MarkerCallback restExtendo() {
         return () -> {
             autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK);
-            autonSystems.robotSubSystems.extendo.setState(Extendo.State.SEMIEXTENDED);
+            autonSystems.robotSubSystems.extendo.setState(Extendo.State.RETRACTED);
             autonSystems.robotSubSystems.intake.setState(Intake.State.UP);
         };
     }
