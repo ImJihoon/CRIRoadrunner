@@ -86,7 +86,6 @@ public class CRISample extends OpMode {
                 .waitSeconds(0.2)
                 .addTemporalMarker(actions.fullExtendo())
                 .UNSTABLE_addTemporalMarkerOffset(0, actions.openClawforDeposit())
-                .waitSeconds(.25)
                 .build();
 
     }
@@ -146,6 +145,7 @@ public class CRISample extends OpMode {
                     yellowSample1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
                             .UNSTABLE_addTemporalMarkerOffset(0,actions.intake())
+                            .UNSTABLE_addTemporalMarkerOffset(0.25,actions.slidesRest())
                             .lineToLinearHeading(new Pose2d(-57,-47, Math.toRadians(72)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
@@ -173,15 +173,15 @@ public class CRISample extends OpMode {
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                             .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
                             .UNSTABLE_addTemporalMarkerOffset(.6, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(.8,() -> autonSystems.setRollerPower(-0.75))
                             .UNSTABLE_addTemporalMarkerOffset(1, actions.flipForDeposit(true))
-                            .lineToLinearHeading(new Pose2d(-62, -58, Math.toRadians(81)))
+                            .lineToLinearHeading(new Pose2d(-62, -58.5, Math.toRadians(81)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
 //                            .addTemporalMarker(actions.prepForDeposit())
                             .waitSeconds(0.8)
                             .UNSTABLE_addTemporalMarkerOffset(0, actions.fullExtendo())
                             .addTemporalMarker(actions.openClawforDeposit())
                             .addTemporalMarker(()-> autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK))
-                            .waitSeconds(.2)
                             .build();
 
 
@@ -199,13 +199,14 @@ public class CRISample extends OpMode {
                             //intake
                             .addTemporalMarker(actions.fullExtendo())
                             .addTemporalMarker(actions.intake())
+                            .UNSTABLE_addTemporalMarkerOffset(0.25,actions.slidesRest())
                             .lineToLinearHeading(new Pose2d(-59.25,-50, Math.toRadians(86.6)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .forward(10)
                             .turn(Math.toRadians(10))
                             .turn(Math.toRadians(-20))
                             .waitSeconds(.5)
-                            .back(20)
+                            .back(10)
                             .build();
                     drive.followTrajectorySequenceAsync(yellowSample2);
                 }
@@ -224,12 +225,12 @@ public class CRISample extends OpMode {
                             .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                             .UNSTABLE_addTemporalMarkerOffset(.4, actions.closeClaw())
                             .UNSTABLE_addTemporalMarkerOffset(.6, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(.6,() -> autonSystems.setRollerPower(-0.75))
                             .UNSTABLE_addTemporalMarkerOffset(1, actions.flipForDeposit(true))
-                            .lineToLinearHeading(new Pose2d(-61, -59, Math.toRadians(73)))
+                            .lineToLinearHeading(new Pose2d(-61, -57.75, Math.toRadians(73)))
                             .waitSeconds(0.8)
                             .addTemporalMarker(actions.openClawforDeposit())
                             .addTemporalMarker(()-> autonSystems.robotSubSystems.blocker.setState(Blocker.State.BLOCK))
-                            .waitSeconds(.2)
                             .build();
 
                     drive.followTrajectorySequenceAsync(toDeposit);
@@ -245,13 +246,15 @@ public class CRISample extends OpMode {
                     yellowSample3 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             //intake
                             .addTemporalMarker(actions.intake())
+                            .UNSTABLE_addTemporalMarkerOffset(0.25,actions.slidesRest())
                             .lineToLinearHeading(new Pose2d(-55.75,-38.5, Math.toRadians(137.5)))
                             .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                             .turn(Math.toRadians(10))
                             .turn(Math.toRadians(-20))
                             .waitSeconds(1)
-                            .back(10)
+                            .lineToLinearHeading(new Pose2d(-55.75,-40, Math.toRadians(90)))
                             .addTemporalMarker(actions.restExtendo())
+                            .addTemporalMarker(actions.slidesRest())
                             .build();
                     actions.semiExtendo();
                     drive.followTrajectorySequenceAsync(yellowSample3);
@@ -274,14 +277,14 @@ public class CRISample extends OpMode {
                             .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                             .UNSTABLE_addTemporalMarkerOffset(.3, actions.closeClaw())
                             .UNSTABLE_addTemporalMarkerOffset(.6, actions.prepForDeposit())
+                            .UNSTABLE_addTemporalMarkerOffset(.6,() -> autonSystems.setRollerPower(-0.75))
                             .UNSTABLE_addTemporalMarkerOffset(1, actions.flipForDeposit(true))
                             .lineToLinearHeading(new Pose2d(-58, -58, Math.toRadians(45)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
 //                            .addTemporalMarker(actions.prepForDeposit())
                             .waitSeconds(0.8)
                             .addTemporalMarker(actions.openClawforDeposit())
-                            .waitSeconds(.2)
-                            .addTemporalMarker(actions.slidesRest())
+                            .addTemporalMarker(actions.restExtendo())
                             .build();
 
                     drive.followTrajectorySequenceAsync(toDeposit);
@@ -289,7 +292,6 @@ public class CRISample extends OpMode {
                 }
 
                 if (!drive.isBusy()) {
-                    actions.semiExtendo();
                     actions.slidesRest();
                     currentState = State.SUB;
                     drive.followTrajectorySequenceAsync(getToSubTraj(drive.getPoseEstimate()));
@@ -310,27 +312,25 @@ public class CRISample extends OpMode {
                 if(IS_COLOR_DETECT) {
                     if (autonSystems.robotSubSystems.colorSensor.getState() == Color_Sensor.State.YELLOW || autonSystems.robotSubSystems.colorSensor.getState() == alliance){
                         drive.breakFollowing();
-                        actions.restExtendo();
-                        actions.slidesRest();
                         IS_COLOR_DETECT = false;
                         TrajectorySequence toDeposit = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.UP))
                                 .addTemporalMarker(() -> autonSystems.setRollerPower(1))
                                 .addTemporalMarker(actions.transfer())
                                 .addTemporalMarker(actions.restExtendo())
-                                .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
                                 .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                                .UNSTABLE_addTemporalMarkerOffset(.6, actions.closeClaw())
-                                .UNSTABLE_addTemporalMarkerOffset(1, actions.prepForDeposit())
-                                .UNSTABLE_addTemporalMarkerOffset(1.5, actions.flipForDeposit(true))
+                                .UNSTABLE_addTemporalMarkerOffset(0.6, ()-> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
+                                .UNSTABLE_addTemporalMarkerOffset(0.8, actions.closeClaw())
+                                .UNSTABLE_addTemporalMarkerOffset(1.1, actions.prepForDeposit())
+                                .UNSTABLE_addTemporalMarkerOffset(1.1,() -> autonSystems.setRollerPower(-0.75))
+                                .UNSTABLE_addTemporalMarkerOffset(1.3, actions.flipForDeposit(true))
                                 .setReversed(true)
                                 .splineTo(new Vector2d(-50, -50), Math.toRadians(225))
-                                .lineTo(new Vector2d(-58, -58))
+                                .lineTo(new Vector2d(-58.5, -58.5))
                                 .setReversed(false)
+                                .waitSeconds(0.2)
                                 .addTemporalMarker(actions.openClawforDeposit())
-                                .addTemporalMarker(actions.semiExtendo())
-                                .waitSeconds(.2)
-                                .addTemporalMarker(actions.slidesRest())
-                                .addTemporalMarker(actions.semiExtendo())
+                                .addTemporalMarker(actions.restExtendo())
                                 .build();
 
                         drive.followTrajectorySequenceAsync(toDeposit);
@@ -338,13 +338,11 @@ public class CRISample extends OpMode {
                     if (autonSystems.robotSubSystems.colorSensor.getState() == opp || !drive.isBusy()) {
                         drive.breakFollowing();
                         TrajectorySequence tryAgainTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .addTemporalMarker(actions.semiExtendo())
                                 .addTemporalMarker(() -> autonSystems.setRollerPower(-0.75))
                                 .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.UP))
-                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), -25, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), -34, Math.toRadians(90)))
                                 .build();
 
-                        actions.semiExtendo();
                         currentState = State.SUB;
                         drive.followTrajectorySequenceAsync(tryAgainTraj);
                     }
@@ -374,43 +372,29 @@ public class CRISample extends OpMode {
         telemetry.update();
 
         return drive.trajectorySequenceBuilder(drivePos)
-                .setConstraints(
-                        new TrajectoryVelocityConstraint() {
-                            @Override
-                            public double get(double v, @NonNull Pose2d pose2d, @NonNull Pose2d pose2d1, @NonNull Pose2d pose2d2) {
-                                return 80;
-                            }
-                        },
-                        new TrajectoryAccelerationConstraint() {
-                            @Override
-                            public double get(double v, @NonNull Pose2d pose2d, @NonNull Pose2d pose2d1, @NonNull Pose2d pose2d2) {
-                                return 70;
-                            }
-                        }
-                )
                 .addTemporalMarker(() -> autonSystems.setRollerPower(-0.75))
                 .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.UP))
-                .splineTo(new Vector2d(coords.get(0),-35),Math.toRadians(90))
-                .addTemporalMarker(actions.semiExtendo())
-                .lineToSplineHeading(new Pose2d(coords.get(0),-25,Math.toRadians(90)))
-                .addTemporalMarker(actions.semiExtendo())
+//                .splineTo(new Vector2d(coords.get(0),-35),Math.toRadians(90))
+//                .addTemporalMarker(actions.semiExtendo())
+//                .lineToLinearHeading(new Pose2d(coords.get(0),-25,Math.toRadians(90)))
+//                .addTemporalMarker(actions.semiExtendo())
+                .UNSTABLE_addTemporalMarkerOffset(0.25,actions.slidesRest())
+                .lineToLinearHeading(new Pose2d(coords.get(0),-28,Math.toRadians(90)))
+                .addTemporalMarker(actions.fullExtendo())
                 .build();
     }
 
     public TrajectorySequence getIntakeTraj(Pose2d drivePos, double offsetX, double offsetY) {
         return drive.trajectorySequenceBuilder(drivePos)
-                .addTemporalMarker(actions.semiExtendo())
                 .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                .lineToConstantHeading(new Vector2d(drivePos.getX()+offsetX+1, drivePos.getY()+offsetY+3))
-                .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.DOWN))
+                .lineToConstantHeading(new Vector2d(drivePos.getX()+offsetX+1, drivePos.getY()+offsetY+8))
+                .UNSTABLE_addTemporalMarkerOffset(0.1, ()-> autonSystems.robotSubSystems.intake.setState(Intake.State.DOWN))
                 .addTemporalMarker(actions.intake())
                 .addTemporalMarker(() -> IS_COLOR_DETECT = true)
                 .addTemporalMarker(() -> autonSystems.robotSubSystems.intake.setState(Intake.State.DOWN))
-                .UNSTABLE_addTemporalMarkerOffset(0.2, actions.fullExtendo())
+                .waitSeconds(0.1)
+                .forward(7)
                 .waitSeconds(0.5)
-                .turn(Math.toRadians(10))
-                .turn(Math.toRadians(-20))
-                .waitSeconds(0.3)
                 .build();
     }
 }
