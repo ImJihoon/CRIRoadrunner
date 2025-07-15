@@ -83,7 +83,7 @@ public class CRISample extends OpMode {
                 //Bucket + intake 1
                 .UNSTABLE_addTemporalMarkerOffset(0.7, actions.flipForDeposit(true))
                 .lineToLinearHeading(new Pose2d(-62,-59, Math.toRadians(66)))
-                .waitSeconds(0.2)
+                .waitSeconds(0.075)
                 .addTemporalMarker(actions.fullExtendo())
                 .UNSTABLE_addTemporalMarkerOffset(0, actions.openClawforDeposit())
                 .build();
@@ -282,7 +282,7 @@ public class CRISample extends OpMode {
                             .lineToLinearHeading(new Pose2d(-58, -58, Math.toRadians(45)))
 //                            .UNSTABLE_addTemporalMarkerOffset(Timings.Deposit.CLAW_CLOSE_OFFSET_DELAY, actions.closeClaw())
 //                            .addTemporalMarker(actions.prepForDeposit())
-                            .waitSeconds(0.8)
+                            .waitSeconds(0.6)
                             .addTemporalMarker(actions.openClawforDeposit())
                             .addTemporalMarker(actions.restExtendo())
                             .build();
@@ -319,16 +319,15 @@ public class CRISample extends OpMode {
                                 .addTemporalMarker(actions.transfer())
                                 .addTemporalMarker(actions.restExtendo())
                                 .addTemporalMarker(() -> autonSystems.setRollerPower(1))
-                                .UNSTABLE_addTemporalMarkerOffset(0.6, ()-> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
-                                .UNSTABLE_addTemporalMarkerOffset(0.8, actions.closeClaw())
+                                .UNSTABLE_addTemporalMarkerOffset(0.5, ()-> autonSystems.robotSubSystems.intake.setState(Intake.State.TRANSFER))
+                                .UNSTABLE_addTemporalMarkerOffset(0.7, actions.closeClaw())
                                 .UNSTABLE_addTemporalMarkerOffset(1.1, actions.prepForDeposit())
                                 .UNSTABLE_addTemporalMarkerOffset(1.1,() -> autonSystems.setRollerPower(-0.75))
-                                .UNSTABLE_addTemporalMarkerOffset(1.3, actions.flipForDeposit(true))
+                                .UNSTABLE_addTemporalMarkerOffset(1.1, actions.flipForDeposit(true))
                                 .setReversed(true)
                                 .splineTo(new Vector2d(-50, -50), Math.toRadians(225))
-                                .lineTo(new Vector2d(-58.5, -58.5))
+                                .lineToLinearHeading(new Pose2d(-59, -59,Math.toRadians(45)))
                                 .setReversed(false)
-                                .waitSeconds(0.2)
                                 .addTemporalMarker(actions.openClawforDeposit())
                                 .addTemporalMarker(actions.restExtendo())
                                 .build();
@@ -379,8 +378,9 @@ public class CRISample extends OpMode {
 //                .lineToLinearHeading(new Pose2d(coords.get(0),-25,Math.toRadians(90)))
 //                .addTemporalMarker(actions.semiExtendo())
                 .UNSTABLE_addTemporalMarkerOffset(0.25,actions.slidesRest())
-                .lineToLinearHeading(new Pose2d(coords.get(0),-28,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(coords.get(0)+5,-29,Math.toRadians(90)))
                 .addTemporalMarker(actions.fullExtendo())
+                .lineToLinearHeading(new Pose2d(coords.get(0),-34,Math.toRadians(90)))
                 .build();
     }
 
