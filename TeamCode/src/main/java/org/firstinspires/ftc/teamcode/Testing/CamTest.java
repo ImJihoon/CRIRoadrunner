@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Autonomous.Vision.NewSampleSearch;
 
+@TeleOp(name="Camera Test")
 public class CamTest extends LinearOpMode {
     NewSampleSearch search;
     boolean yellow, red, blue;
