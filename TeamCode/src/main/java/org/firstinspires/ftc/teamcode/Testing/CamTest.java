@@ -16,7 +16,8 @@ public class CamTest extends LinearOpMode {
         search = new NewSampleSearch(hardwareMap, false, false, false);
         waitForStart();
         if (isStopRequested()) return;
-
+        search.enable();
+        search.beginProcessing(-256);
         while (opModeIsActive()) {
             telemetry.addLine(String.format("enabled (r,y,b): %s, %s, %s", red, yellow, blue));
             telemetry.addLine(String.format("delta x, delta y: %s, %s", search.getX(), search.getY()));

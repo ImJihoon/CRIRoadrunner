@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
 import static org.opencv.imgproc.Imgproc.COLOR_GRAY2BGR;
+import static org.opencv.imgproc.Imgproc.COLOR_GRAY2RGB;
+import static org.opencv.imgproc.Imgproc.COLOR_GRAY2RGBA;
 import static org.opencv.imgproc.Imgproc.MORPH_RECT;
 import static org.opencv.imgproc.Imgproc.createHanningWindow;
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
@@ -31,10 +33,7 @@ import java.util.List;
 public class NewSampleSearch implements VisionProcessor {
     VisionPortal frontPortal;
     //cv test stuff
-    public boolean seeThres = true;
-    boolean pipThres = false;
-
-    boolean pipMorph = false;
+    public boolean seeThres = false;
     public boolean seeMorph = false;
 
     public boolean yellow = false;
@@ -124,9 +123,7 @@ public class NewSampleSearch implements VisionProcessor {
                 Core.bitwise_or(img_threshold, yellow, img_threshold);
             }
 
-            if (seeThres)
-                Imgproc.cvtColor(img_threshold, img_threshold, COLOR_GRAY2BGR);
-                Core.addWeighted(frame, 0.8, img_threshold, 0.25, 0.1, frame);
+
             //NOTE: morphology
             Mat dilateKernel1 = getStructuringElement(
                     MORPH_RECT,
@@ -154,8 +151,7 @@ public class NewSampleSearch implements VisionProcessor {
             Imgproc.dilate(img_threshold, img_morph, dilateKernel1);
             Imgproc.erode(img_morph, img_morph, erodeKernel);
             Imgproc.dilate(img_morph, img_morph, dilateKernel2);
-            if (seeMorph)
-                img_morph.copyTo(frame);
+
             //NOTE: contours
             Mat hierarchy = new Mat();
             List<MatOfPoint> contours = new ArrayList<>();
@@ -188,6 +184,16 @@ public class NewSampleSearch implements VisionProcessor {
                         Imgproc.FONT_HERSHEY_SIMPLEX,
                         1, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA);
             }
+            if (seeThres) {
+                Imgproc.cvtColor(img_threshold, img_threshold, COLOR_GRAY2RGBA);
+                Core.addWeighted(frame, 0.8, img_threshold, 0.25, 0.1, frame);
+                Imgproc.putText(frame, String.format("frame, thres: %s, %s", frame.channels(), img_threshold.channels()),
+                        new Point(200,300),
+                        Imgproc.FONT_HERSHEY_SIMPLEX,
+                        0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
+            }
+            if (seeMorph)
+                img_morph.copyTo(frame);
 
         }
         return null;
