@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
+import static org.opencv.imgproc.Imgproc.COLOR_GRAY2BGR;
 import static org.opencv.imgproc.Imgproc.MORPH_RECT;
 import static org.opencv.imgproc.Imgproc.createHanningWindow;
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
@@ -79,7 +80,7 @@ public class NewSampleSearch implements VisionProcessor {
         this.yellow = yellow;
         this.red = red;
         this.blue = blue;
-        frontPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")).addProcessors(this).setCameraResolution(new Size(640, 480)).setStreamFormat(VisionPortal.StreamFormat.YUY2).enableLiveView(false).setAutoStopLiveView(true).build();
+        frontPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")).addProcessors(this).setCameraResolution(new Size(640, 480)).setStreamFormat(VisionPortal.StreamFormat.YUY2).enableLiveView(true).setAutoStopLiveView(true).build();
         frontPortal.setProcessorEnabled(this, false);
         setUpVals();
     }
@@ -106,25 +107,26 @@ public class NewSampleSearch implements VisionProcessor {
             if (red) {
                 Mat red1 = new Mat();
                 Mat red2 = new Mat();
-                Core.inRange(img_hsv, new Scalar(170, 120, 80), new Scalar(180, 255, 255), red1);
-                Core.inRange(img_hsv, new Scalar(0, 120, 80), new Scalar(0, 255, 255), red2);
+                Core.inRange(img_hsv, new Scalar(340, 30, 60.0), new Scalar(360, 90, 100.0), red1);
+                Core.inRange(img_hsv, new Scalar(0, 30, 60.0), new Scalar(10, 90, 100.0), red2);
                 Core.bitwise_or(red1, red2, img_threshold);
 
             }
             if (blue) {
                 Mat blue = new Mat();
-                Core.inRange(img_hsv, new Scalar(90, 125, 0), new Scalar(140, 255, 200), blue);
+                Core.inRange(img_hsv, new Scalar(220, 47, 36.1), new Scalar(235, 66.3, 100), blue);
                 Core.bitwise_or(img_threshold, blue, img_threshold);
 
             }
             if (yellow) {
                 Mat yellow = new Mat();
-                Core.inRange(img_hsv, new Scalar(12, 180, 200), new Scalar(35, 255, 255), yellow);
+                Core.inRange(img_hsv, new Scalar(48, 23.1, 40), new Scalar(62, 85, 100.0), yellow);
                 Core.bitwise_or(img_threshold, yellow, img_threshold);
             }
 
             if (seeThres)
-                img_threshold.copyTo(frame);
+                Imgproc.cvtColor(img_threshold, img_threshold, COLOR_GRAY2BGR);
+                Core.addWeighted(frame, 0.8, img_threshold, 0.25, 0.1, frame);
             //NOTE: morphology
             Mat dilateKernel1 = getStructuringElement(
                     MORPH_RECT,
@@ -223,6 +225,10 @@ public class NewSampleSearch implements VisionProcessor {
     public void enable(boolean enabled) {
         frontPortal.setProcessorEnabled(this, enabled);
     }
+
+    public void disable(){frontPortal.setProcessorEnabled(this, false);}
+    public void beginProcessing(){ count = 5; }
+    public void beginProcessing(int frames) {count = frames;}
 
     public void close() {
         frontPortal.close();
