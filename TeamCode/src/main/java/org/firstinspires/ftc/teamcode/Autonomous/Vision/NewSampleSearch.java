@@ -54,7 +54,8 @@ public class NewSampleSearch implements VisionProcessor {
     double l3;
 
     double count = -256;
-    public void setUpVals(){
+
+    public void setUpVals() {
 
         height = 11; //mm
         camFOV = new HashMap<>(); //deg, deg
@@ -67,6 +68,8 @@ public class NewSampleSearch implements VisionProcessor {
         hypotenuse = height / Math.cos(Math.toRadians(90 - camAngle)); //mm
         distFromCenter = hypotenuse * Math.tan(Math.toRadians(camFOV.get("y") / 2)); //mm
     }
+
+    //NOTE: only for eocv_test
     public NewSampleSearch() {
         setUpVals();
     }
@@ -77,6 +80,7 @@ public class NewSampleSearch implements VisionProcessor {
         this.red = red;
         this.blue = blue;
         frontPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")).addProcessors(this).setCameraResolution(new Size(640, 480)).setStreamFormat(VisionPortal.StreamFormat.YUY2).enableLiveView(false).setAutoStopLiveView(true).build();
+        frontPortal.setProcessorEnabled(this, false);
         setUpVals();
     }
 
@@ -148,7 +152,7 @@ public class NewSampleSearch implements VisionProcessor {
             Imgproc.dilate(img_threshold, img_morph, dilateKernel1);
             Imgproc.erode(img_morph, img_morph, erodeKernel);
             Imgproc.dilate(img_morph, img_morph, dilateKernel2);
-            if(seeMorph)
+            if (seeMorph)
                 img_morph.copyTo(frame);
             //NOTE: contours
             Mat hierarchy = new Mat();
@@ -177,8 +181,8 @@ public class NewSampleSearch implements VisionProcessor {
 
                 double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
                 l3 = -(l2 * pixelX) / (cameraDimensions.get("x") / 2);
-                Imgproc.putText(frame,String.format("(Δx,Δy): %s, %s", l3, horiz),
-                        new Point(pixelX+20, pixelY-60),
+                Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
+                        new Point(pixelX + 20, pixelY - 60),
                         Imgproc.FONT_HERSHEY_SIMPLEX,
                         1, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA);
             }
@@ -191,12 +195,15 @@ public class NewSampleSearch implements VisionProcessor {
     public void onDrawFrame(Canvas canvas, int i, int i1, float v, float v1, Object o) {
 
     }
-    public void getX(){
 
+    public double getX() {
+        return l3;
     }
-    public void getY(){
 
+    public double getY() {
+        return horiz;
     }
+
     public void setColor(boolean red, boolean blue, boolean yellow) {
         this.yellow = yellow;
         this.red = red;
