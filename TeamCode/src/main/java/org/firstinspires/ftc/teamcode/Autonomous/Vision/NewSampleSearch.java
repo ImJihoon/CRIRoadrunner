@@ -55,7 +55,7 @@ public class NewSampleSearch implements VisionProcessor {
 
     double count = -256;
 
-    public void setUpVals() {
+    void setUpVals() {
 
         height = 11; //mm
         camFOV = new HashMap<>(); //deg, deg
@@ -79,7 +79,7 @@ public class NewSampleSearch implements VisionProcessor {
         this.yellow = yellow;
         this.red = red;
         this.blue = blue;
-        frontPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")).addProcessors(this).setCameraResolution(new Size(640, 480)).setStreamFormat(VisionPortal.StreamFormat.YUY2).enableLiveView(true).setAutoStopLiveView(true).build();
+        frontPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")).addProcessors(this).setCameraResolution(new Size(640, 480)).setStreamFormat(VisionPortal.StreamFormat.YUY2).enableLiveView(true).setAutoStopLiveView(true).setLiveViewContainerId(0).build();
         frontPortal.setProcessorEnabled(this, false);
         setUpVals();
     }
