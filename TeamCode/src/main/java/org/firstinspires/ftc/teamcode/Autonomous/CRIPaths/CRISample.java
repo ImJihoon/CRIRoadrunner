@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Actions;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonSystems;
 import org.firstinspires.ftc.teamcode.Autonomous.Timings;
 import org.firstinspires.ftc.teamcode.Autonomous.TrajectoryUtil.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.Autonomous.Vision.NewSampleSearch;
 import org.firstinspires.ftc.teamcode.Roadrunner.AutonMechDrive;
 import org.firstinspires.ftc.teamcode.RobotSystem.Lynx;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Blocker;
@@ -48,6 +49,7 @@ public class CRISample extends OpMode {
     AutonSystems autonSystems;
     Actions actions;
     Lynx lynx;
+    NewSampleSearch vision;
 
     //Trajectories
     TrajectorySequence preloadTraj, yellowSample1, yellowSample2, yellowSample3;
@@ -122,6 +124,8 @@ public class CRISample extends OpMode {
 
     @Override
     public void start(){
+        boolean isRed = (alliance == Color_Sensor.State.RED);
+        vision = new NewSampleSearch(hardwareMap, isRed, !isRed, true);
         drive.followTrajectorySequenceAsync(preloadTraj);
         currentState = State.PRELOAD;
     }
@@ -294,6 +298,7 @@ public class CRISample extends OpMode {
                 if (!drive.isBusy()) {
                     actions.slidesRest();
                     currentState = State.SUB;
+                    vision.enable();
                     drive.followTrajectorySequenceAsync(getToSubTraj(drive.getPoseEstimate()));
                 }
 
@@ -303,8 +308,8 @@ public class CRISample extends OpMode {
                 if (!drive.isBusy()) {
                     cameraTimer.reset();
                     currentState = State.VISION;
-                    drive.followTrajectorySequenceAsync(getIntakeTraj(drive.getPoseEstimate(),0,0));
-                    //TODO: camera code for offsets ^^^
+                    drive.followTrajectorySequenceAsync(getIntakeTraj(drive.getPoseEstimate(),vision.getX(),vision.getY()));
+                    vision.disable();
                 }
 
                 break;
@@ -355,6 +360,12 @@ public class CRISample extends OpMode {
 
         }
     }
+
+    @Override
+    public void stop(){
+        vision.close();
+    }
+
     public TrajectorySequence getToSubTraj(Pose2d drivePos) {
 
         List<Double> coords;
@@ -381,6 +392,7 @@ public class CRISample extends OpMode {
                 .lineToLinearHeading(new Pose2d(coords.get(0)+5,-29,Math.toRadians(90)))
                 .addTemporalMarker(actions.fullExtendo())
                 .lineToLinearHeading(new Pose2d(coords.get(0),-34,Math.toRadians(90)))
+                .addTemporalMarker(()-> vision.beginProcessing(20))
                 .build();
     }
 
