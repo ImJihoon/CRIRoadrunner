@@ -66,11 +66,11 @@ public int erodeSize1 = 5;
 
     void setUpVals() {
 
-        height = 11; //mm
+        height = 279.4; //mm, 11 in
         camFOV = new HashMap<>(); //deg, deg
         camFOV.put("x", 49.58256);
         camFOV.put("y", 38.21321);
-        camAngle = 60; //deg
+        camAngle = 30; //deg
         cameraDimensions = new HashMap<>(); //px, px
         cameraDimensions.put("x", 640.0);
         cameraDimensions.put("y", 480.0);
@@ -220,8 +220,15 @@ public int erodeSize1 = 5;
                 double a2 = (90 - camAngle) - a1;
                 horiz = Math.tan(Math.toRadians(a2)) * height;
 
+                //TODO: test ts GPT fix
+//                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
+//                l3 = -(l2 * pixelX) / (cameraDimensions.get("x") / 2);
+                double imageCenterX = cameraDimensions.get("x") / 2.0;
                 double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
-                l3 = -(l2 * pixelX) / (cameraDimensions.get("x") / 2);
+//                l3 = ((pixelX - imageCenterX) / imageCenterX) * l2;
+                l3 = Math.tan(Math.toRadians(((pixelX - (cameraDimensions.get("x") / 2.0)) / (cameraDimensions.get("x") / 2.0)) * (camFOV.get("x") / 2.0))) * horiz;
+
+
                 Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
                         new Point(pixelX + 20, pixelY - 60),
                         Imgproc.FONT_HERSHEY_SIMPLEX,
@@ -245,11 +252,11 @@ public int erodeSize1 = 5;
     }
 
     public double getX() {
-        return l3;
+        return l3/25.4;
     }
 
     public double getY() {
-        return horiz;
+        return horiz/25.4 - 7;
     }
 
     public void setColor(boolean red, boolean blue, boolean yellow) {
