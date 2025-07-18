@@ -47,7 +47,7 @@ public class NewSampleSearch implements VisionProcessor {
     public Scalar yellowLower;
     public Scalar yellowUpper;
 
-public int erodeSize1 = 5;
+    public int erodeSize1 = 5;
     public int erodeSize2 = 10;
     public int dilateSize1 = 5;
     public int dilateSize2 = 10;
@@ -74,8 +74,8 @@ public int erodeSize1 = 5;
         cameraDimensions = new HashMap<>(); //px, px
         cameraDimensions.put("x", 640.0);
         cameraDimensions.put("y", 480.0);
-        hypotenuse = height / Math.cos(Math.toRadians(90 - camAngle)); //mm
-        distFromCenter = hypotenuse * Math.tan(Math.toRadians(camFOV.get("y") / 2)); //mm
+        hypotenuse = height / Math.cos(Math.toRadians(90 - camAngle)); //in
+        distFromCenter = hypotenuse * Math.tan(Math.toRadians(camFOV.get("y") / 2)); //in
     }
 
     //NOTE: only for eocv_test
@@ -114,24 +114,24 @@ public int erodeSize1 = 5;
             double[] groundAvg = Core.mean(ground_hsv).val;
 
             Imgproc.putText(frame, String.format("avg Color: %s, %s, %s",
-                            (int)(Core.mean(ground_hsv).val[0]*100)/100.0,
-                            (int)(Core.mean(ground_hsv).val[1]*100)/100.0,
-                            (int)(Core.mean(ground_hsv).val[2]*100)/100.0),
-                    new Point(200,300),
+                            (int) (Core.mean(ground_hsv).val[0] * 100) / 100.0,
+                            (int) (Core.mean(ground_hsv).val[1] * 100) / 100.0,
+                            (int) (Core.mean(ground_hsv).val[2] * 100) / 100.0),
+                    new Point(200, 300),
                     Imgproc.FONT_HERSHEY_SIMPLEX,
                     0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
             Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), Core.mean(ground), -1);
-            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255,255,255), 1);
+            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255, 255, 255), 1);
 
             //yibe
-            redLower = new Scalar(150,5*groundAvg[1]/3+30,groundAvg[2]*0.9);
-            redUpper = new Scalar(groundAvg[0]/10+7,255,255);
+            redLower = new Scalar(150, 5 * groundAvg[1] / 3 + 30, groundAvg[2] * 0.9);
+            redUpper = new Scalar(groundAvg[0] / 10 + 7, 255, 255);
 
-            blueLower = new Scalar(groundAvg[0]*3/4+37.5,groundAvg[1]/3-25+groundAvg[0],10);
-            blueUpper = new Scalar(131,255,-2.5*groundAvg[2]+80+10*groundAvg[0]);
+            blueLower = new Scalar(groundAvg[0] * 3 / 4 + 37.5, groundAvg[1] / 3 - 25 + groundAvg[0], 10);
+            blueUpper = new Scalar(131, 255, -2.5 * groundAvg[2] + 80 + 10 * groundAvg[0]);
 
-            yellowLower = new Scalar(14,100,groundAvg[2]+10);
-            yellowUpper = new Scalar(groundAvg[0]/2+15,255,255);
+            yellowLower = new Scalar(14, 100, groundAvg[2] + 10);
+            yellowUpper = new Scalar(groundAvg[0] / 2 + 15, 255, 255);
 
             Mat img_hsv = new Mat();
             Imgproc.cvtColor(frame, img_hsv, Imgproc.COLOR_RGB2HSV);
@@ -215,18 +215,21 @@ public int erodeSize1 = 5;
                 Imgproc.rectangle(frame, bestRect, new Scalar(255, 0, 0), 2);
                 double pixelX = bestRect.x + bestRect.width / 2.0;
                 double pixelY = bestRect.y + bestRect.height / 2.0;
-                double l1 = (pixelY * distFromCenter) / (cameraDimensions.get("x") / 2);
+
+
+                double l1 = ((pixelY - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2);
                 double a1 = Math.toDegrees(Math.atan(l1 / hypotenuse));
                 double a2 = (90 - camAngle) - a1;
                 horiz = Math.tan(Math.toRadians(a2)) * height;
 
-                //TODO: test ts GPT fix
-//                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
-//                l3 = -(l2 * pixelX) / (cameraDimensions.get("x") / 2);
-                double imageCenterX = cameraDimensions.get("x") / 2.0;
                 double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
+                l3 = -(l2 * (pixelX - cameraDimensions.get("x") / 2)) / (cameraDimensions.get("x") / 2);
+
+                //TODO: test ts GPT fix
+//                double imageCenterX = cameraDimensions.get("x") / 2.0;
+//                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
 //                l3 = ((pixelX - imageCenterX) / imageCenterX) * l2;
-                l3 = Math.tan(Math.toRadians(((pixelX - (cameraDimensions.get("x") / 2.0)) / (cameraDimensions.get("x") / 2.0)) * (camFOV.get("x") / 2.0))) * horiz;
+//                l3 = Math.tan(Math.toRadians(((pixelX - (cameraDimensions.get("x") / 2.0)) / (cameraDimensions.get("x") / 2.0)) * (camFOV.get("x") / 2.0))) * horiz;
 
 
                 Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
@@ -252,11 +255,11 @@ public int erodeSize1 = 5;
     }
 
     public double getX() {
-        return l3/25.4;
+        return l3 / 25.4;
     }
 
     public double getY() {
-        return horiz/25.4 - 7;
+        return horiz / 25.4 - 7;
     }
 
     public void setColor(boolean red, boolean blue, boolean yellow) {
@@ -279,9 +282,17 @@ public int erodeSize1 = 5;
         frontPortal.setProcessorEnabled(this, enabled);
     }
 
-    public void disable(){frontPortal.setProcessorEnabled(this, false);}
-    public void beginProcessing(){ count = 5; }
-    public void beginProcessing(int frames) {count = frames;}
+    public void disable() {
+        frontPortal.setProcessorEnabled(this, false);
+    }
+
+    public void beginProcessing() {
+        count = 5;
+    }
+
+    public void beginProcessing(int frames) {
+        count = frames;
+    }
 
     public void close() {
         frontPortal.close();
