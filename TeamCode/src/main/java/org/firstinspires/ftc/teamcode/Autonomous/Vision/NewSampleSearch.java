@@ -66,7 +66,7 @@ public class NewSampleSearch implements VisionProcessor {
 
     void setUpVals() {
 
-        height = 279.4; //mm, 11 in
+        height = 11; // in
         camFOV = new HashMap<>(); //deg, deg
         camFOV.put("x", 49.58256);
         camFOV.put("y", 38.21321);
@@ -255,11 +255,11 @@ public class NewSampleSearch implements VisionProcessor {
     }
 
     public double getX() {
-        return l3 / 25.4;
+        return l3 ;
     }
 
     public double getY() {
-        return horiz / 25.4 - 7;
+        return horiz;
     }
 
     public void setColor(boolean red, boolean blue, boolean yellow) {
