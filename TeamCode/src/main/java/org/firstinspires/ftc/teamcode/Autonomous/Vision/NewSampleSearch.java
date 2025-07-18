@@ -36,25 +36,26 @@ public class NewSampleSearch implements VisionProcessor {
     //cv test stuff
     public boolean seeThres = true;
     public boolean seeMorph = false;
-
+    public boolean debug = false;
     public boolean yellow = false;
     public boolean red = false;
     public boolean blue = false;
-    public Scalar redLower;
-    public Scalar redUpper;
-    public Scalar blueLower;
-    public Scalar blueUpper;
-    public Scalar yellowLower;
-    public Scalar yellowUpper;
+    Scalar redLower;
+    Scalar redUpper;
+    Scalar blueLower;
+    Scalar blueUpper;
+    Scalar yellowLower;
+    Scalar yellowUpper;
 
-    public int erodeSize1 = 5;
-    public int erodeSize2 = 10;
-    public int dilateSize1 = 5;
-    public int dilateSize2 = 10;
+    int dilateSize0 = 2;
+    int erodeSize1 = 5;
+    int erodeSize2 = 10;
+    int dilateSize1 = 5;
+    int dilateSize2 = 10;
 
-    double height; //mm
+    public double height; //mm
     HashMap<String, Double> camFOV; //deg, deg
-    double camAngle; //deg
+    public double camAngle; //deg
     HashMap<String, Double> cameraDimensions;
     double hypotenuse;
     double distFromCenter;
@@ -113,16 +114,17 @@ public class NewSampleSearch implements VisionProcessor {
 
             double[] groundAvg = Core.mean(ground_hsv).val;
 
-//            Imgproc.putText(frame, String.format("avg Color: %s, %s, %s",
-//                            (int) (Core.mean(ground_hsv).val[0] * 100) / 100.0,
-//                            (int) (Core.mean(ground_hsv).val[1] * 100) / 100.0,
-//                            (int) (Core.mean(ground_hsv).val[2] * 100) / 100.0),
-//                    new Point(200, 300),
-//                    Imgproc.FONT_HERSHEY_SIMPLEX,
-//                    0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
-//            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), Core.mean(ground), -1);
-//            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255, 255, 255), 1);
-
+            if(debug) {
+                Imgproc.putText(frame, String.format("avg Color: %s, %s, %s",
+                                (int) (Core.mean(ground_hsv).val[0] * 100) / 100.0,
+                                (int) (Core.mean(ground_hsv).val[1] * 100) / 100.0,
+                                (int) (Core.mean(ground_hsv).val[2] * 100) / 100.0),
+                        new Point(200, 300),
+                        Imgproc.FONT_HERSHEY_SIMPLEX,
+                        0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
+                Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), Core.mean(ground), -1);
+                Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255, 255, 255), 1);
+            }
             //yibe
             redLower = new Scalar(150, 5 * groundAvg[1] / 3 + 30, groundAvg[2] * 0.9);
             redUpper = new Scalar(groundAvg[0] / 10 + 7, 255, 255);
@@ -160,7 +162,12 @@ public class NewSampleSearch implements VisionProcessor {
 
 
             //NOTE: morphology
-
+            Mat dilateKernel0 = getStructuringElement(
+                    MORPH_RECT,
+                    new org.opencv.core.Size(
+                            2 * dilateSize0 + 1,
+                            2 * dilateSize0 + 1),
+                    new Point(dilateSize0, dilateSize0));
             Mat erodeKernel1 = getStructuringElement(
                     MORPH_RECT,
                     new org.opencv.core.Size(
@@ -190,7 +197,8 @@ public class NewSampleSearch implements VisionProcessor {
 
             Mat img_morph = new Mat();
 
-            Imgproc.erode(img_threshold, img_morph, erodeKernel1);
+            Imgproc.dilate(img_threshold, img_morph, dilateKernel0);
+            Imgproc.erode(img_morph, img_morph, erodeKernel1);
             Imgproc.dilate(img_morph, img_morph, dilateKernel1);
             Imgproc.erode(img_morph, img_morph, erodeKernel2);
             Imgproc.dilate(img_morph, img_morph, dilateKernel2);
@@ -212,14 +220,17 @@ public class NewSampleSearch implements VisionProcessor {
 
             Rect bestRect = Imgproc.boundingRect(bestMat);
             if (bestSize != -1) {
-//                Imgproc.rectangle(frame, bestRect, new Scalar(255, 0, 0), 2);
-//                double pixelX = bestRect.x + bestRect.width / 2.0;
-//                double pixelY = bestRect.y + bestRect.height / 2.0;
+                if(debug)
+                    Imgproc.rectangle(frame, bestRect, new Scalar(255, 0, 0), 2);
 
 
 //                double l1 = ((pixelY - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2);
 //                double a1 = Math.toDegrees(Math.atan(l1 / hypotenuse));
 //                double a2 = (90 - camAngle) - a1;
+                if(debug) {
+                    hypotenuse = height / Math.cos(Math.toRadians(90 - camAngle)); //in
+                    distFromCenter = hypotenuse * Math.tan(Math.toRadians(camFOV.get("y") / 2)); //in
+                }
                 horiz = Math.tan(Math.toRadians((90 - camAngle) - Math.toDegrees(Math.atan(((bestRect.y + bestRect.height / 2.0 - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2) / hypotenuse)))) * height;
 
 //                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
@@ -231,11 +242,12 @@ public class NewSampleSearch implements VisionProcessor {
 //                l3 = ((pixelX - imageCenterX) / imageCenterX) * l2;
 //                l3 = Math.tan(Math.toRadians(((pixelX - (cameraDimensions.get("x") / 2.0)) / (cameraDimensions.get("x") / 2.0)) * (camFOV.get("x") / 2.0))) * horiz;
 
-
-//                Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
-//                        new Point(pixelX + 20, pixelY - 60),
-//                        Imgproc.FONT_HERSHEY_SIMPLEX,
-//                        1, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA);
+                if(debug) {
+                    Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", Math.round(l3 * 100) / 100.0, Math.round(horiz * 100) / 100.0),
+                            new Point(200 + 20, 400),
+                            Imgproc.FONT_HERSHEY_SIMPLEX,
+                            0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
+                }
             }
             if (seeThres) {
                 Imgproc.cvtColor(img_threshold, img_threshold, COLOR_GRAY2RGBA);
