@@ -113,15 +113,15 @@ public class NewSampleSearch implements VisionProcessor {
 
             double[] groundAvg = Core.mean(ground_hsv).val;
 
-            Imgproc.putText(frame, String.format("avg Color: %s, %s, %s",
-                            (int) (Core.mean(ground_hsv).val[0] * 100) / 100.0,
-                            (int) (Core.mean(ground_hsv).val[1] * 100) / 100.0,
-                            (int) (Core.mean(ground_hsv).val[2] * 100) / 100.0),
-                    new Point(200, 300),
-                    Imgproc.FONT_HERSHEY_SIMPLEX,
-                    0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
-            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), Core.mean(ground), -1);
-            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255, 255, 255), 1);
+//            Imgproc.putText(frame, String.format("avg Color: %s, %s, %s",
+//                            (int) (Core.mean(ground_hsv).val[0] * 100) / 100.0,
+//                            (int) (Core.mean(ground_hsv).val[1] * 100) / 100.0,
+//                            (int) (Core.mean(ground_hsv).val[2] * 100) / 100.0),
+//                    new Point(200, 300),
+//                    Imgproc.FONT_HERSHEY_SIMPLEX,
+//                    0.5, new Scalar(255, 255, 255), 1, Imgproc.LINE_AA);
+//            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), Core.mean(ground), -1);
+//            Imgproc.rectangle(frame, new Rect(300, 400, 120, 40), new Scalar(255, 255, 255), 1);
 
             //yibe
             redLower = new Scalar(150, 5 * groundAvg[1] / 3 + 30, groundAvg[2] * 0.9);
@@ -212,18 +212,18 @@ public class NewSampleSearch implements VisionProcessor {
 
             Rect bestRect = Imgproc.boundingRect(bestMat);
             if (bestSize != -1) {
-                Imgproc.rectangle(frame, bestRect, new Scalar(255, 0, 0), 2);
-                double pixelX = bestRect.x + bestRect.width / 2.0;
-                double pixelY = bestRect.y + bestRect.height / 2.0;
+//                Imgproc.rectangle(frame, bestRect, new Scalar(255, 0, 0), 2);
+//                double pixelX = bestRect.x + bestRect.width / 2.0;
+//                double pixelY = bestRect.y + bestRect.height / 2.0;
 
 
-                double l1 = ((pixelY - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2);
-                double a1 = Math.toDegrees(Math.atan(l1 / hypotenuse));
-                double a2 = (90 - camAngle) - a1;
-                horiz = Math.tan(Math.toRadians(a2)) * height;
+//                double l1 = ((pixelY - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2);
+//                double a1 = Math.toDegrees(Math.atan(l1 / hypotenuse));
+//                double a2 = (90 - camAngle) - a1;
+                horiz = Math.tan(Math.toRadians((90 - camAngle) - Math.toDegrees(Math.atan(((bestRect.y + bestRect.height / 2.0 - cameraDimensions.get("y") / 2) * distFromCenter) / (cameraDimensions.get("y") / 2) / hypotenuse)))) * height;
 
-                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
-                l3 = -(l2 * (pixelX - cameraDimensions.get("x") / 2)) / (cameraDimensions.get("x") / 2);
+//                double l2 = Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz;
+                l3 = -(Math.tan(Math.toRadians(camFOV.get("x") / 2)) * horiz * (bestRect.x + bestRect.width / 2.0 - cameraDimensions.get("x") / 2)) / (cameraDimensions.get("x") / 2);
 
                 //TODO: test ts GPT fix
 //                double imageCenterX = cameraDimensions.get("x") / 2.0;
@@ -232,10 +232,10 @@ public class NewSampleSearch implements VisionProcessor {
 //                l3 = Math.tan(Math.toRadians(((pixelX - (cameraDimensions.get("x") / 2.0)) / (cameraDimensions.get("x") / 2.0)) * (camFOV.get("x") / 2.0))) * horiz;
 
 
-                Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
-                        new Point(pixelX + 20, pixelY - 60),
-                        Imgproc.FONT_HERSHEY_SIMPLEX,
-                        1, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA);
+//                Imgproc.putText(frame, String.format("(Δx,Δy): %s, %s", l3, horiz),
+//                        new Point(pixelX + 20, pixelY - 60),
+//                        Imgproc.FONT_HERSHEY_SIMPLEX,
+//                        1, new Scalar(255, 255, 255), 2, Imgproc.LINE_AA);
             }
             if (seeThres) {
                 Imgproc.cvtColor(img_threshold, img_threshold, COLOR_GRAY2RGBA);
