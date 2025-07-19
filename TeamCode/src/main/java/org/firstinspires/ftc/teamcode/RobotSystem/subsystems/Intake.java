@@ -16,7 +16,7 @@ public class Intake extends TomaOpMode {
     public static double SEMI_POS = .84;
     public static double DOWN_POS = .92;
     public static double UP_POS = 0.8;
-    public static double TRANSFER_POS = 0.725;
+    public static double TRANSFER_POS = 0.74;
 
 
     public Intake(OpMode opMode) {

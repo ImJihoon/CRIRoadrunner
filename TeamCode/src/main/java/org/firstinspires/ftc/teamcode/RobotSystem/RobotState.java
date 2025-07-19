@@ -160,7 +160,7 @@ public class RobotState extends TomaOpMode {
             robotSubSystems.intake.setState(Intake.State.UP);
         }
 
-        if (robotSubSystems.extendo.getSlidePos() <= 200) {
+        if (robotSubSystems.extendo.getSlidePos() <= 100) {
             robotSubSystems.blocker.setState(Blocker.State.NOT_BLOCK); //TEST AUTO TRANSFER
         }
         if (robotSubSystems.extendo.getSlidePos() <= 15) {

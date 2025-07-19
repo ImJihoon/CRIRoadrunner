@@ -37,7 +37,7 @@ public class Extendo extends TomaOpMode {
     public void setState(State state) {
         switch (state) {
             case RETRACTED:
-                DeviceConfig.extendo.setTargetPosition(0);
+                DeviceConfig.extendo.setTargetPosition(10);
 
                 DeviceConfig.extendo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 

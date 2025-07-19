@@ -11,11 +11,6 @@ import org.firstinspires.ftc.teamcode.RobotSystem.DeviceConfig;
 import org.firstinspires.ftc.teamcode.RobotSystem.Lynx;
 import org.firstinspires.ftc.teamcode.RobotSystem.RobotState;
 import org.firstinspires.ftc.teamcode.RobotSystem.SubSystems;
-import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Blinker;
-import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Blocker;
-import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Claw;
-import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Color_Sensor;
-import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Extendo;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Hang;
 import org.firstinspires.ftc.teamcode.RobotSystem.subsystems.Slides;
@@ -71,20 +66,21 @@ public class MainTeleop extends LinearOpMode {
 
             if (maxToggle.get(gamepad2.dpad_up)) {   //  SLIDE ADJUSTMENT TOGGLE
 
-               Slides.MAX_HEIGHT = !Slides.MAX_HEIGHT;
+                Slides.MAX_HEIGHT = !Slides.MAX_HEIGHT;
 
             }
 
             if (stateToggle.get(gamepad2.right_bumper)) { // TOGGLE STATES
                 robotState.nextState();
+                robotState.block = false;
             } else if (stateToggle.get(gamepad2.left_bumper)) {
                 robotState.previousState();
+                robotState.block = false;
+
             }
 
             if (blockerToggle.get(gamepad2.square)) {   //  BLOCKER TOGGLE
-
-                robotSubSystems.blocker.setState(robotSubSystems.blocker.currentState == Blocker.State.BLOCK ? Blocker.State.NOT_BLOCK : Blocker.State.BLOCK);
-
+                robotState.block = !robotState.block;
             }
 
             if (basketToggle.get(gamepad2.dpad_down)) { // TOGGLE BASKET MODE
@@ -108,8 +104,25 @@ public class MainTeleop extends LinearOpMode {
                 DeviceConfig.slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
 
+            if (hangToggle.get(gamepad2.left_stick_button)) {   // HANG MODE TOGGLE
+                Hang.HANG_MODE = !Hang.HANG_MODE;
+                gamepad2.rumble(400);
+                gamepad1.rumble(400);
+            }
 
-            if (robotState.currentMode == RobotState.Mode.SAMPLE_MODE) {      // INTAKE DOWN LOGIC
+            if (Hang.HANG_MODE) {
+                if (gamepad2.right_trigger > 0.5 ) {
+                    robotSubSystems.hang.setState(Hang.State.HANG);
+                }
+
+                else if (gamepad2.left_trigger > 0.5) robotSubSystems.hang.setState(Hang.State.REVERSE);
+
+                else robotSubSystems.hang.setState(Hang.State.STOP);
+            }
+
+
+
+            if (robotState.currentMode == RobotState.Mode.SAMPLE_MODE && !Hang.HANG_MODE) {      // INTAKE DOWN LOGIC
                 if (robotState.currentSampleState == RobotState.SAMPLE_STATES.INTAKE)
                     if (gamepad2.right_trigger > 0.5 && gamepad2.left_trigger > 0.5) {
                         robotSubSystems.intake.setRollerPower(-1);
@@ -136,35 +149,6 @@ public class MainTeleop extends LinearOpMode {
                     }
                 }
             }
-
-
-
-            if (hangToggle.get(gamepad1.square)) {   // HANG MODE TOGGLE
-                Hang.HANG_MODE = !Hang.HANG_MODE;
-                gamepad1.rumble(400);
-            }
-
-            if (Hang.HANG_MODE) {
-                if (gamepad1.right_trigger > 0.5 ) {
-                    robotSubSystems.hang.setState(Hang.State.HANG);
-                }
-
-                else if (gamepad1.left_trigger > 0.5) robotSubSystems.hang.setState(Hang.State.REVERSE);
-
-                else robotSubSystems.hang.setState(Hang.State.STOP);
-            }
-
-//            if (robotSubSystems.colorSensor.isYellow() && robotState.currentSampleState == RobotState.SAMPLE_STATES.INTAKE  && autoRetracted == false) {
-//                robotState.handleSampleState(RobotState.SAMPLE_STATES.TRANSFER);
-//                autoRetracted = true;
-//
-//            }
-//
-//            if (!robotSubSystems.colorSensor.isYellow()) {
-//                autoRetracted = false;
-//            }
-
-//            blinker();
 
 
             robotState.handleRobotState();

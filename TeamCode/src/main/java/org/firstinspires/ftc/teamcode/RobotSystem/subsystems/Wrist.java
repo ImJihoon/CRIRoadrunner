@@ -12,7 +12,7 @@ public class Wrist extends TomaOpMode {
 
     public State currentState = State.REST;
 
-    public static double REST_POS = 0.13;
+    public static double REST_POS = 0.12;
     public static double AUTO_BEFORE_DEPOSIT_POS = .39;
     public static double AUTO_DEPOSIT_POS = .55;
     public static double DEPOSIT_POS = 0.49;
