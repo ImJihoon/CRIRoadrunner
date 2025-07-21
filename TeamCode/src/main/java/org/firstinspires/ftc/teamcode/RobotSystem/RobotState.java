@@ -162,10 +162,10 @@ public class RobotState extends TomaOpMode {
 
         if (robotSubSystems.extendo.getSlidePos() <= 100) {
             robotSubSystems.blocker.setState(Blocker.State.NOT_BLOCK); //TEST AUTO TRANSFER
+            robotSubSystems.intake.setState(Intake.State.TRANSFER);
         }
         if (robotSubSystems.extendo.getSlidePos() <= 15) {
 //            block = false;
-            robotSubSystems.intake.setState(Intake.State.TRANSFER);
             robotSubSystems.claw.setState(Claw.State.CLOSED); //TEST AUTO TRANSFER
         }
 
@@ -187,7 +187,6 @@ public class RobotState extends TomaOpMode {
     private void depositSequence() {
         robotSubSystems.blocker.setState(Blocker.State.NOT_BLOCK);
         robotSubSystems.claw.setState(Claw.State.CLOSED);
-        robotSubSystems.intake.setState(Intake.State.UP);
         robotSubSystems.slides.setState(LOW_BASKET ? Slides.State.BOTTOM_BASKET : Slides.State.TOP_BASKET);
 
         if (!LOW_BASKET) {
@@ -213,6 +212,7 @@ public class RobotState extends TomaOpMode {
         robotSubSystems.wrist.setState(Wrist.State.DEPOSIT);
 
         robotSubSystems.claw.setState(Claw.State.OPEN);
+        robotSubSystems.intake.setState(Intake.State.UP);
 
 //        Drivetrain.SLOW = true;
 

@@ -252,11 +252,11 @@ public int erodeSize1 = 5;
     }
 
     public double getX() {
-        return l3/25.4;
+        return (l3 == -256)? 0: l3/25.4;
     }
 
     public double getY() {
-        return horiz/25.4 - 7;
+        return (horiz == -256)?0:horiz/25.4 - 7;
     }
 
     public void setColor(boolean red, boolean blue, boolean yellow) {
@@ -280,8 +280,14 @@ public int erodeSize1 = 5;
     }
 
     public void disable(){frontPortal.setProcessorEnabled(this, false);}
-    public void beginProcessing(){ count = 5; }
-    public void beginProcessing(int frames) {count = frames;}
+    public void beginProcessing(){
+      beginProcessing(5);
+    }
+    public void beginProcessing(int frames) {
+        count = frames;
+        horiz = -256;
+        l3 = -256;
+    }
 
     public void close() {
         frontPortal.close();
